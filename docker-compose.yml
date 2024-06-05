@@ -1,0 +1,38 @@
+
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: job_service_db
+    ports:
+      - "5432:5432"
+  app:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_NAME: job_service_db
+      AZURE_AD_AUDIENCE: crusers.b2clogin.com
+      AZURE_AD_TENANTID: bd3a168c-3c8e-482d-9638-ca8353550b70
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_NAME: job_service_db
+    depends_on:
+      - db
